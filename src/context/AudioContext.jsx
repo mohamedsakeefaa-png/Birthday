@@ -16,7 +16,9 @@ export const AudioProvider = ({ children }) => {
 
   useEffect(() => {
     // Try romantic love audio track
-    const audio = new Audio('/audio/birthday-song.mp3');
+        const base = import.meta.env.BASE_URL || './';
+    const audioUrl = base.endsWith('/') ? `${base}audio/birthday-song.mp3` : `${base}/audio/birthday-song.mp3`;
+    const audio = new Audio(audioUrl);
     audio.loop = true;
     audio.volume = volume;
     audioRef.current = audio;
