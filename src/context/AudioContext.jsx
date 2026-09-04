@@ -8,7 +8,6 @@ export const AudioProvider = ({ children }) => {
   const [volume, setVolume] = useState(1.0);
   const [audioSource, setAudioSource] = useState('file');
   const [audioError, setAudioError] = useState(false);
-  const [userInteracted, setUserInteracted] = useState(false);
 
   const audioRef = useRef(null);
 
@@ -23,23 +22,44 @@ export const AudioProvider = ({ children }) => {
     ];
 
     let currentUrlIndex = 0;
-    const audio = new Audio(possibleUrls[0]);
+    
+    // Create DOM audio element with multi-codec source tags for AAC / M4A / MP3 container support
+    const audio = document.createElement('audio');
     audio.loop = true;
     audio.volume = volume;
+    audio.preload = 'auto';
+
+    const loadSources = (url) => {
+      // Clear existing sources
+      while (audio.firstChild) {
+        audio.removeChild(audio.firstChild);
+      }
+      
+      const mimeTypes = ['audio/mpeg', 'audio/mp4', 'audio/aac', 'audio/x-m4a'];
+      mimeTypes.forEach(type => {
+        const source = document.createElement('source');
+        source.src = url;
+        source.type = type;
+        audio.appendChild(source);
+      });
+      
+      audio.load();
+    };
+
+    loadSources(possibleUrls[0]);
     audioRef.current = audio;
 
     const handleCanPlay = () => {
       setAudioError(false);
       setAudioSource('file');
-      console.log("Audio ready to play from:", audio.src);
+      console.log("Audio ready to play from:", audio.currentSrc || possibleUrls[currentUrlIndex]);
     };
 
     const handleError = (err) => {
       currentUrlIndex++;
       if (currentUrlIndex < possibleUrls.length) {
         console.warn("Retrying audio from next URL:", possibleUrls[currentUrlIndex]);
-        audio.src = possibleUrls[currentUrlIndex];
-        audio.load();
+        loadSources(possibleUrls[currentUrlIndex]);
       } else {
         console.warn("All audio paths failed.");
         setAudioError(true);
@@ -50,7 +70,6 @@ export const AudioProvider = ({ children }) => {
     audio.addEventListener('error', handleError);
 
     const handleFirstInteraction = () => {
-      setUserInteracted(true);
       if (audioRef.current && audioRef.current.paused) {
         audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
       }
@@ -113,7 +132,6 @@ export const AudioProvider = ({ children }) => {
       volume,
       audioSource,
       audioError,
-      userInteracted,
       togglePlay,
       toggleMute,
       handleVolumeChange,
