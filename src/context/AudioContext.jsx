@@ -5,7 +5,7 @@ const AudioContextState = createContext();
 export const AudioProvider = ({ children }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [volume, setVolume] = useState(0.5);
+  const [volume, setVolume] = useState(1.0);
   const [audioSource, setAudioSource] = useState('file');
   const [audioError, setAudioError] = useState(false);
   const [userInteracted, setUserInteracted] = useState(false);
@@ -76,7 +76,7 @@ export const AudioProvider = ({ children }) => {
       stopSynth();
 
       const masterGain = synthCtxRef.current.createGain();
-      masterGain.gain.setValueAtTime(isMuted ? 0 : volume * 0.15, synthCtxRef.current.currentTime);
+      masterGain.gain.setValueAtTime(isMuted ? 0 : volume * 0.6, synthCtxRef.current.currentTime);
       masterGain.connect(synthCtxRef.current.destination);
 
       chordFrequencies.forEach((freq, idx) => {

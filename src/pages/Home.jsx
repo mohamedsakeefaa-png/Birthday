@@ -1,3 +1,4 @@
+import { getImageUrl } from '../utils/imageHelper';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -157,7 +158,7 @@ export const Home = () => {
                 height: '480px'
               }}>
                 <img
-                  src="/images/couple-hero.jpg"
+                  src={getImageUrl("/images/couple-hero.jpg")}
                   alt="Sakeef and Nisma Nahar"
                   style={{
                     width: '100%',

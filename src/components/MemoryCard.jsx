@@ -1,3 +1,4 @@
+import { getImageUrl } from '../utils/imageHelper';
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Maximize2, Heart } from 'lucide-react';
@@ -58,7 +59,7 @@ export const MemoryCard = ({ memory, onSelect }) => {
           overflow: 'hidden'
         }}>
           <img
-            src={memory.image}
+            src={getImageUrl(memory.image)}
             alt={memory.title}
             style={{
               width: '100%',

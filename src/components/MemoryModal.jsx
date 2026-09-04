@@ -1,3 +1,4 @@
+import { getImageUrl } from '../utils/imageHelper';
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Heart, Calendar } from 'lucide-react';
@@ -63,7 +64,7 @@ export const MemoryModal = ({ memory, onClose }) => {
           {/* Full Image */}
           <div style={{ width: '100%', maxHeight: '420px', overflow: 'hidden', position: 'relative' }}>
             <img
-              src={memory.image}
+              src={getImageUrl(memory.image)}
               alt={memory.title}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
