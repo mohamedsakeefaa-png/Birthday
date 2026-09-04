@@ -11,14 +11,19 @@ export const AudioProvider = ({ children }) => {
   const [userInteracted, setUserInteracted] = useState(false);
 
   const audioRef = useRef(null);
-  const synthCtxRef = useRef(null);
-  const synthOscillatorsRef = useRef([]);
 
   useEffect(() => {
-    // Try romantic love audio track
-        const base = import.meta.env.BASE_URL || './';
-    const audioUrl = base.endsWith('/') ? `${base}audio/birthday-song.mp3` : `${base}/audio/birthday-song.mp3`;
-    const audio = new Audio(audioUrl);
+    // Try multiple possible audio URLs for static host compatibility
+    const possibleUrls = [
+      './audio/birthday-song.mp3',
+      '/Birthday/audio/birthday-song.mp3',
+      './birthday-song.mp3',
+      '/Birthday/birthday-song.mp3',
+      '/audio/birthday-song.mp3'
+    ];
+
+    let currentUrlIndex = 0;
+    const audio = new Audio(possibleUrls[0]);
     audio.loop = true;
     audio.volume = volume;
     audioRef.current = audio;
@@ -26,17 +31,18 @@ export const AudioProvider = ({ children }) => {
     const handleCanPlay = () => {
       setAudioError(false);
       setAudioSource('file');
+      console.log("Audio ready to play from:", audio.src);
     };
 
-    const handleError = () => {
-      // Fallback try .wav if mp3 browser decoder issue
-      if (audio.src.endsWith('.mp3')) {
-        audio.src = '/audio/birthday-song.wav';
+    const handleError = (err) => {
+      currentUrlIndex++;
+      if (currentUrlIndex < possibleUrls.length) {
+        console.warn("Retrying audio from next URL:", possibleUrls[currentUrlIndex]);
+        audio.src = possibleUrls[currentUrlIndex];
         audio.load();
       } else {
-        console.warn("Audio file error. Falling back to ambient synth.");
+        console.warn("All audio paths failed.");
         setAudioError(true);
-        setAudioSource('synth');
       }
     };
 
@@ -45,92 +51,28 @@ export const AudioProvider = ({ children }) => {
 
     const handleFirstInteraction = () => {
       setUserInteracted(true);
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
-      window.removeEventListener('keydown', handleFirstInteraction);
+      if (audioRef.current && audioRef.current.paused) {
+        audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+      }
     };
 
-    window.addEventListener('click', handleFirstInteraction);
-    window.addEventListener('touchstart', handleFirstInteraction);
-    window.addEventListener('keydown', handleFirstInteraction);
+    window.addEventListener('click', handleFirstInteraction, { once: true });
+    window.addEventListener('touchstart', handleFirstInteraction, { once: true });
 
     return () => {
       audio.removeEventListener('canplaythrough', handleCanPlay);
       audio.removeEventListener('error', handleError);
       audio.pause();
-      stopSynth();
     };
   }, []);
 
-  // Web Audio ambient romantic synth fallback
-  const startSynth = () => {
-    try {
-      if (!synthCtxRef.current) {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        synthCtxRef.current = new AudioContextClass();
-      }
-      if (synthCtxRef.current.state === 'suspended') {
-        synthCtxRef.current.resume();
-      }
-
-      // Cmaj7 -> Am9 romantic chords (Hz)
-      const chordFrequencies = [261.63, 329.63, 392.00, 493.88, 523.25];
-      stopSynth();
-
-      const masterGain = synthCtxRef.current.createGain();
-      masterGain.gain.setValueAtTime(isMuted ? 0 : volume * 0.6, synthCtxRef.current.currentTime);
-      masterGain.connect(synthCtxRef.current.destination);
-
-      chordFrequencies.forEach((freq, idx) => {
-        const osc = synthCtxRef.current.createOscillator();
-        const oscGain = synthCtxRef.current.createGain();
-
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, synthCtxRef.current.currentTime);
-
-        const lfo = synthCtxRef.current.createOscillator();
-        lfo.frequency.value = 0.2 + idx * 0.1;
-        const lfoGain = synthCtxRef.current.createGain();
-        lfoGain.gain.value = 2;
-        lfo.connect(lfoGain);
-        lfoGain.connect(osc.frequency);
-        lfo.start();
-
-        oscGain.gain.setValueAtTime(0.05, synthCtxRef.current.currentTime);
-        osc.connect(oscGain);
-        oscGain.connect(masterGain);
-        osc.start();
-
-        synthOscillatorsRef.current.push({ osc, lfo, gain: oscGain });
-      });
-    } catch (e) {
-      console.warn("Synth failed:", e);
-    }
-  };
-
-  const stopSynth = () => {
-    synthOscillatorsRef.current.forEach(({ osc, lfo }) => {
-      try {
-        osc.stop();
-        lfo.stop();
-      } catch (e) {}
-    });
-    synthOscillatorsRef.current = [];
-  };
-
   const playMusic = () => {
-    if (audioSource === 'file' && audioRef.current) {
+    if (audioRef.current) {
       audioRef.current.play().then(() => {
         setIsPlaying(true);
       }).catch((e) => {
-        console.warn("Audio play error, falling back to synth", e);
-        setAudioSource('synth');
-        startSynth();
-        setIsPlaying(true);
+        console.warn("Play error:", e);
       });
-    } else {
-      startSynth();
-      setIsPlaying(true);
     }
   };
 
@@ -138,7 +80,6 @@ export const AudioProvider = ({ children }) => {
     if (audioRef.current) {
       audioRef.current.pause();
     }
-    stopSynth();
     setIsPlaying(false);
   };
 
