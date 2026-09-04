@@ -1,0 +1,242 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  /* Atmosphere Colors */
+  --bg-dark: #090514;
+  --bg-gradient: radial-gradient(circle at 50% 20%, #200b3b 0%, #110724 45%, #070312 100%);
+  --purple-glow: rgba(168, 85, 247, 0.4);
+  --pink-glow: rgba(236, 72, 153, 0.5);
+  --magenta-accent: #ec4899;
+  --rose-pink: #f43f5e;
+  --gold-warm: #fbbf24;
+  --gold-light: #fef08a;
+  --lavender: #c084fc;
+  --cyan-accent: #38bdf8;
+  
+  /* Text colors */
+  --text-main: #f8fafc;
+  --text-muted: #cbd5e1;
+  --text-dim: #94a3b8;
+  
+  /* Glassmorphism Specs */
+  --glass-bg: rgba(23, 15, 43, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.14);
+  --glass-border-pink: rgba(236, 72, 153, 0.35);
+  --glass-border-gold: rgba(251, 191, 36, 0.35);
+  --glass-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+  
+  /* Fonts */
+  --font-heading: 'Playfair Display', serif;
+  --font-script: 'Dancing Script', cursive;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  
+  /* Transitions */
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  background-color: var(--bg-dark);
+  background: var(--bg-gradient);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #090514;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(236, 72, 153, 0.3);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(236, 72, 153, 0.6);
+}
+
+/* Base Glassmorphism utility */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 20px;
+}
+
+.glass-panel-glow {
+  background: rgba(30, 16, 56, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border-pink);
+  box-shadow: 0 0 30px rgba(236, 72, 153, 0.25), var(--glass-shadow);
+  border-radius: 24px;
+}
+
+.glass-panel-gold {
+  background: rgba(35, 20, 50, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border-gold);
+  box-shadow: 0 0 35px rgba(251, 191, 36, 0.25), var(--glass-shadow);
+  border-radius: 24px;
+}
+
+/* Typography classes */
+.title-script {
+  font-family: var(--font-script);
+  color: var(--magenta-accent);
+  text-shadow: 0 0 15px rgba(236, 72, 153, 0.6);
+}
+
+.title-gradient {
+  font-family: var(--font-heading);
+  background: linear-gradient(135deg, #ffffff 0%, #f472b6 50%, #e879f9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px rgba(236, 72, 153, 0.3);
+}
+
+.title-gold-gradient {
+  font-family: var(--font-heading);
+  background: linear-gradient(135deg, #ffffff 0%, #fef08a 40%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px rgba(251, 191, 36, 0.4);
+}
+
+/* Floating Animations */
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(1deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+@keyframes spinSlow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-float {
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+/* Button styles */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #ec4899 0%, #d946ef 50%, #9333ea 100%);
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.5px;
+  padding: 14px 32px;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 25px rgba(236, 72, 153, 0.6), 0 8px 20px rgba(0,0,0,0.4);
+  transition: var(--transition-normal);
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: 0.6s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 0 35px rgba(236, 72, 153, 0.85), 0 12px 25px rgba(0,0,0,0.5);
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  color: var(--text-main);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  text-decoration: none;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Perspective 3D Container */
+.perspective-container {
+  perspective: 1200px;
+}
+
+/* Page Layout Wrappers */
+.page-container {
+  width: 100%;
+  min-height: calc(100vh - 80px);
+  padding: 100px 24px 140px 24px;
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 768px) {
+  .page-container {
+    padding: 85px 16px 160px 16px;
+  }
+}
